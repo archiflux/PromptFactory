@@ -38,6 +38,21 @@ Fragment wording follows architectural-render prompting best practice —
 specific materials, named lighting, reflections and realism cues, human
 activity, and photographic / editorial quality tags.
 
+## Deploy to Vercel
+
+This is a static site (no build step), so Vercel serves it as-is.
+
+**Dashboard (recommended):** at [vercel.com/new](https://vercel.com/new), import
+the `archiflux/PromptFactory` repo. Leave Framework Preset as **Other**, Build
+Command empty, and Output Directory empty (root). Deploy. Every push then
+redeploys automatically.
+
+**CLI:** `npm i -g vercel`, then `vercel` (preview) or `vercel --prod` from the
+repo root.
+
+The included [`vercel.json`](vercel.json) enables clean URLs; no other config is
+needed.
+
 ## How it works
 
 Every dropdown option in [`data.js`](data.js) carries a `fragment`: a complete
