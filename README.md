@@ -30,7 +30,13 @@ start index.html       # Windows
 4. Paste the prompt into your AI image tool and attach the exported image.
 
 As you change dropdowns, the exact sentence(s) that changed briefly pulse in the
-prompt so you can see what each control does.
+prompt so you can see what each control does. Picking a **Preset** opens a serif
+menu and dims the rest of the page; once you tweak any dropdown away from that
+preset's defaults, the heading shows a **(Customised)** flag.
+
+Fragment wording follows architectural-render prompting best practice —
+specific materials, named lighting, reflections and realism cues, human
+activity, and photographic / editorial quality tags.
 
 ## How it works
 

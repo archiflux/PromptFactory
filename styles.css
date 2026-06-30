@@ -81,20 +81,93 @@ html, body {
   margin-bottom: 7px;
 }
 
-.preset-row { margin-bottom: 26px; }
-.preset-select {
-  font-family: var(--serif);
-  font-size: clamp(20px, 3.4vw, 30px);
-  font-weight: 600;
-  letter-spacing: -0.01em;
-  padding: 6px 40px 8px 0;
+/* ---------- Custom preset dropdown ---------- */
+.preset-row { position: relative; margin-bottom: 26px; }
+.preset-row.open { z-index: 60; }
+
+.preset-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  width: 100%;
+  background: none;
   border: none;
   border-bottom: 2px solid var(--ink);
   border-radius: 0;
-  background-position: right 4px center;
-  background-size: 18px;
+  padding: 6px 2px 9px 0;
+  cursor: pointer;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: clamp(21px, 3.4vw, 31px);
+  font-weight: 600;
+  letter-spacing: -0.015em;
+  text-align: left;
 }
-.preset-select:hover { background-color: transparent; }
+.preset-btn:hover { opacity: .72; }
+.preset-btn:focus-visible { outline: none; box-shadow: inset 0 -2px 0 var(--ink); }
+.preset-caret { flex-shrink: 0; transition: transform .18s ease; color: var(--muted); }
+.preset-row.open .preset-caret { transform: rotate(180deg); }
+
+/* the suffix span injected by JS */
+.preset-tag {
+  font-family: var(--sans);
+  font-size: .42em;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--muted);
+  vertical-align: middle;
+  margin-left: .5em;
+}
+
+.preset-pop {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  background: var(--paper);
+  border: 1px solid var(--line-strong);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .18);
+  max-height: min(58vh, 460px);
+  overflow-y: auto;
+  z-index: 60;
+}
+.preset-pop[hidden] { display: none; }
+.preset-item {
+  font-family: var(--serif);
+  font-size: 19px;
+  font-weight: 500;
+  letter-spacing: -0.01em;
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid transparent;
+}
+.preset-item:hover, .preset-item.active { background: #f3f3f1; }
+.preset-item.sel { font-weight: 700; }
+.preset-item.sel::after { content: "●"; font-size: 10px; color: var(--ink); }
+
+/* ---------- Scrim (fades the rest of the page while choosing) ---------- */
+.scrim {
+  position: fixed;
+  inset: 0;
+  background: rgba(255, 255, 255, .74);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s ease;
+  z-index: 50;
+}
+.scrim.show { opacity: 1; pointer-events: auto; }
+@media (prefers-reduced-motion: reduce) { .scrim { transition: none; } }
 
 select, input[type="text"] {
   width: 100%;

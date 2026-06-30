@@ -1,6 +1,6 @@
 /*
  * app.js — wires the UI to RENDER_DATA, assembles the prompt as labelled
- * segments, and pulses the segments that change between renders.
+ * segments, pulses segments that change, and drives the custom preset dropdown.
  */
 (function () {
   "use strict";
@@ -8,11 +8,12 @@
   const D = RENDER_DATA;
   const $ = (sel) => document.querySelector(sel);
 
-  // Order in which field fragments appear in the prompt.
+  // Fields the prompt is built from, in order. These six are also what a
+  // preset configures, so they drive the "(Customised)" indicator.
   const FIELD_ORDER = ["style", "lighting", "material", "background", "entourage", "weather"];
 
-  // Snapshot of the last render, keyed by segment id, for change detection.
-  let prevSegments = null;
+  const state = { preset: D.presets[0].value };
+  let prevSegments = null; // snapshot of last render for change detection
 
   /* ---------- helpers ---------- */
   function fillSelect(select, options) {
@@ -24,11 +25,7 @@
       select.appendChild(o);
     }
   }
-
-  function selVal(id) {
-    const el = document.getElementById(id);
-    return el ? el.value : "";
-  }
+  const selVal = (id) => (document.getElementById(id) || {}).value || "";
 
   function fragmentFor(fieldKey) {
     const sel = document.getElementById("sel-" + fieldKey);
@@ -36,87 +33,135 @@
     const opt = D.fields[fieldKey].options.find((o) => o.value === sel.value);
     return opt && opt.fragment ? opt.fragment.trim() : "";
   }
+  const currentPreset = () => D.presets.find((p) => p.value === state.preset) || D.presets[0];
 
-  /* ---------- build the field dropdowns ---------- */
+  /* ---------- build field dropdowns ---------- */
   function buildFields() {
     for (const key of Object.keys(D.fields)) {
-      const field = D.fields[key];
       const host = document.getElementById("field-" + key);
       if (!host) continue;
-
       const label = document.createElement("label");
       label.className = "lbl";
       label.setAttribute("for", "sel-" + key);
-      label.textContent = field.label;
-
+      label.textContent = D.fields[key].label;
       const select = document.createElement("select");
       select.id = "sel-" + key;
-      fillSelect(select, field.options);
-
-      host.appendChild(label);
-      host.appendChild(select);
-      select.addEventListener("change", render);
+      fillSelect(select, D.fields[key].options);
+      host.append(label, select);
+      select.addEventListener("change", () => render(true));
     }
   }
 
   /* ---------- static selects ---------- */
   function buildStatic() {
-    fillSelect($("#preset"), D.presets);
     fillSelect($("#aspect"), D.output.aspect);
     fillSelect($("#quality"), D.output.quality);
+    $("#aspect").addEventListener("change", () => render(true));
+    $("#quality").addEventListener("change", () => render(true));
+    // Typing custom directions updates the prompt WITHOUT pulsing, so the
+    // animation is never interrupted/restarted on each keystroke (incl. space).
+    $("#custom").addEventListener("input", () => render(false));
+  }
 
-    $("#aspect").addEventListener("change", render);
-    $("#quality").addEventListener("change", render);
-    $("#custom").addEventListener("input", render);
-    $("#preset").addEventListener("change", () => {
-      applyPreset($("#preset").value);
-      render();
+  /* ---------- custom preset dropdown ---------- */
+  function buildPresetMenu() {
+    const pop = $("#presetPop");
+    pop.innerHTML = "";
+    D.presets.forEach((p) => {
+      const li = document.createElement("li");
+      li.className = "preset-item" + (p.value === state.preset ? " sel" : "");
+      li.setAttribute("role", "option");
+      li.dataset.value = p.value;
+      li.setAttribute("aria-selected", p.value === state.preset ? "true" : "false");
+      li.textContent = p.label;
+      li.addEventListener("click", () => {
+        selectPreset(p.value);
+        closePreset();
+        $("#presetBtn").focus();
+      });
+      pop.appendChild(li);
     });
   }
 
-  function currentPreset() {
-    return D.presets.find((p) => p.value === selVal("preset")) || D.presets[0];
+  function openPreset() {
+    buildPresetMenu();
+    $("#presetPop").hidden = false;
+    $("#presetRow").classList.add("open");
+    $("#presetBtn").setAttribute("aria-expanded", "true");
+    $("#scrim").classList.add("show");
+    // bring the selected item into view
+    const sel = $("#presetPop .sel");
+    if (sel) sel.scrollIntoView({ block: "nearest" });
   }
+  function closePreset() {
+    $("#presetPop").hidden = true;
+    $("#presetRow").classList.remove("open");
+    $("#presetBtn").setAttribute("aria-expanded", "false");
+    $("#scrim").classList.remove("show");
+  }
+  const presetOpen = () => !$("#presetPop").hidden;
 
-  function applyPreset(value) {
-    const preset = D.presets.find((p) => p.value === value);
-    if (!preset) return;
+  function selectPreset(value) {
+    state.preset = value;
+    const preset = currentPreset();
     for (const field of Object.keys(preset.set)) {
       const sel = document.getElementById("sel-" + field);
       if (sel) sel.value = preset.set[field];
+    }
+    render(true);
+  }
+
+  function wirePreset() {
+    $("#presetBtn").addEventListener("click", () => (presetOpen() ? closePreset() : openPreset()));
+    $("#scrim").addEventListener("click", closePreset);
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && presetOpen()) { closePreset(); $("#presetBtn").focus(); }
+    });
+    document.addEventListener("click", (e) => {
+      if (presetOpen() && !$("#presetRow").contains(e.target)) closePreset();
+    });
+  }
+
+  /* Is any field different from the active preset's defaults? */
+  function isCustomised() {
+    const set = currentPreset().set;
+    return FIELD_ORDER.some((k) => selVal("sel-" + k) !== set[k]);
+  }
+
+  function updatePresetButton() {
+    const text = $("#presetText");
+    text.textContent = currentPreset().label;
+    if (isCustomised()) {
+      const tag = document.createElement("span");
+      tag.className = "preset-tag";
+      tag.textContent = "(Customised)";
+      text.appendChild(tag);
     }
   }
 
   /* ---------- assemble the prompt as labelled segments ---------- */
   function buildSegments() {
-    const segs = [];
-    const preset = currentPreset();
-
-    segs.push({ id: "base", text: preset.base.trim() });
+    const segs = [{ id: "base", text: currentPreset().base.trim() }];
 
     for (const key of FIELD_ORDER) {
       const frag = fragmentFor(key);
       if (frag) segs.push({ id: key, text: frag });
     }
 
-    const qualityOpt = D.output.quality.find((q) => q.value === selVal("quality"));
-    if (qualityOpt && qualityOpt.fragment) segs.push({ id: "quality", text: qualityOpt.fragment });
+    const q = D.output.quality.find((o) => o.value === selVal("quality"));
+    if (q && q.fragment) segs.push({ id: "quality", text: q.fragment });
 
-    const aspectOpt = D.output.aspect.find((a) => a.value === selVal("aspect"));
-    if (aspectOpt && aspectOpt.ratio) {
-      segs.push({ id: "aspect", text: "Compose the image in a " + aspectOpt.ratio + " aspect ratio." });
-    }
+    const a = D.output.aspect.find((o) => o.value === selVal("aspect"));
+    if (a && a.ratio) segs.push({ id: "aspect", text: "Compose the image in a " + a.ratio + " aspect ratio." });
 
     const custom = $("#custom").value.trim();
-    if (custom) {
-      segs.push({ id: "custom", text: "Additional directions: " + custom + (/[.!?]$/.test(custom) ? "" : ".") });
-    }
+    if (custom) segs.push({ id: "custom", text: "Additional directions: " + custom + (/[.!?]$/.test(custom) ? "" : ".") });
 
     return segs;
   }
 
-  /* ---------- render + pulse changed segments ---------- */
-  function render() {
+  /* ---------- render (+ optionally pulse changed segments) ---------- */
+  function render(allowPulse) {
     const segs = buildSegments();
     const out = $("#output");
     out.innerHTML = "";
@@ -126,22 +171,20 @@
       span.className = "seg";
       span.dataset.id = seg.id;
       span.textContent = seg.text;
-
-      // Pulse if this segment is new or its text changed (skip first paint).
-      if (prevSegments && prevSegments.get(seg.id) !== seg.text) {
+      if (allowPulse && prevSegments && prevSegments.get(seg.id) !== seg.text) {
         span.classList.add("pulse");
       }
       out.appendChild(span);
       if (i < segs.length - 1) out.appendChild(document.createTextNode(" "));
     });
 
-    // Update snapshot.
     prevSegments = new Map(segs.map((s) => [s.id, s.text]));
 
     const full = segs.map((s) => s.text).join(" ");
     $("#charCount").textContent =
       full.length + " characters · " + full.split(/\s+/).filter(Boolean).length + " words";
     $("#copied").hidden = true;
+    updatePresetButton();
   }
 
   /* ---------- copy ---------- */
@@ -166,12 +209,10 @@
   /* ---------- reset ---------- */
   function wireReset() {
     $("#resetBtn").addEventListener("click", () => {
-      $("#preset").value = D.presets[0].value;
-      applyPreset(D.presets[0].value);
       $("#custom").value = "";
       $("#aspect").value = D.output.aspect[0].value;
       $("#quality").value = D.output.quality[0].value;
-      render();
+      selectPreset(D.presets[0].value);
     });
   }
 
@@ -179,12 +220,11 @@
   function init() {
     buildStatic();
     buildFields();
+    wirePreset();
     wireReset();
     $("#copyBtn").addEventListener("click", copyPrompt);
 
-    $("#preset").value = D.presets[0].value;
-    applyPreset(D.presets[0].value);
-    render(); // first paint: no pulses
+    selectPreset(D.presets[0].value); // sets fields + first render (no prev → no pulse)
   }
 
   document.addEventListener("DOMContentLoaded", init);

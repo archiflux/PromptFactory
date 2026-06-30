@@ -19,9 +19,13 @@
 
     <!-- ============ Controls ============ -->
     <section class="controls">
-      <div class="preset-row">
-        <label class="lbl" for="preset">Preset</label>
-        <select id="preset" class="preset-select"></select>
+      <div class="preset-row" id="presetRow">
+        <span class="lbl" id="presetLabel">Preset</span>
+        <button type="button" class="preset-btn" id="presetBtn" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="presetLabel">
+          <span id="presetText">Preset</span>
+          <svg class="preset-caret" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <ul class="preset-pop" id="presetPop" role="listbox" hidden></ul>
       </div>
 
       <div class="controls-grid">
@@ -66,6 +70,8 @@
       <p class="count" id="charCount"></p>
     </section>
   </main>
+
+  <div class="scrim" id="scrim"></div>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
