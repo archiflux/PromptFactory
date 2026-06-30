@@ -23,18 +23,23 @@ start index.html       # Windows
 ### Workflow
 
 1. Export your unrendered view (Revit, Rhino, SketchUp, etc.) as an image.
-2. Pick a **Prompt Library** preset, then tune **Style, Lighting, Material,
-   Background, Entourage, Weather**, and add any **Custom Directions**.
-3. Set **Output Settings** (aspect ratio, quality).
-4. Click **Copy**.
-5. Paste the prompt into your AI image tool and attach the exported image.
+2. Pick a **Preset** — it sets the framing and every style dropdown at once —
+   then tune **Style, Lighting, Material, Background, Entourage, Weather**,
+   aspect ratio, quality, and any **Custom directions**.
+3. Click **Copy prompt**.
+4. Paste the prompt into your AI image tool and attach the exported image.
+
+As you change dropdowns, the exact sentence(s) that changed briefly pulse in the
+prompt so you can see what each control does.
 
 ## How it works
 
 Every dropdown option in [`data.js`](data.js) carries a `fragment`: a complete
-sentence. The generator stitches the chosen fragments onto a framing instruction
-(from the selected preset) that locks the building's geometry, then appends your
-custom directions and any model-specific tail.
+sentence. A **preset** bundles a framing instruction (`base`) with a full set of
+field selections. The generator stitches the chosen fragments onto the framing
+instruction (which locks the building's geometry) and appends your custom
+directions. Each fragment is rendered as its own segment, which is how the app
+highlights only the parts that change.
 
 ### Extending it
 
@@ -50,8 +55,9 @@ lighting: {
 }
 ```
 
-Add a whole new preset under `templates` with its own `base` framing text and
-`defaults`. No changes to `app.js` are required.
+Add a whole new preset to the `presets` array — give it a `base` framing string
+(reuse one from `BASES`) and a `set` of field selections. No changes to `app.js`
+are required.
 
 ## Files
 

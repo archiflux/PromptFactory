@@ -7,93 +7,65 @@
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-  <div class="app">
-    <!-- ============ Controls panel ============ -->
-    <section class="panel" id="panel">
-      <header class="panel-head">
-        <div class="brand">
-          <span class="logo">PF</span>
-          <div>
-            <h1>Prompt Factory</h1>
-            <p class="sub">Turn an unrendered Revit / CAD view into a crafted AI rendering prompt.</p>
-          </div>
+  <main class="wrap">
+    <!-- ============ Masthead ============ -->
+    <header class="masthead">
+      <div class="mast-left">
+        <h1 class="title">Prompt&nbsp;Factory</h1>
+        <p class="tagline">Turn an unrendered Revit / CAD view into a crafted prompt for any AI image generator.</p>
+      </div>
+      <button class="link-btn" id="resetBtn">Reset</button>
+    </header>
+
+    <!-- ============ Controls ============ -->
+    <section class="controls">
+      <div class="preset-row">
+        <label class="lbl" for="preset">Preset</label>
+        <select id="preset" class="preset-select"></select>
+      </div>
+
+      <div class="controls-grid">
+        <div class="control" id="field-style"></div>
+        <div class="control" id="field-lighting"></div>
+        <div class="control" id="field-material"></div>
+        <div class="control" id="field-background"></div>
+        <div class="control" id="field-entourage"></div>
+        <div class="control" id="field-weather"></div>
+        <div class="control">
+          <label class="lbl" for="aspect">Aspect ratio</label>
+          <select id="aspect"></select>
         </div>
-        <button class="icon-btn" id="resetBtn" title="Reset all options">Reset</button>
-      </header>
-
-      <!-- Rendering Style -->
-      <div class="section" data-section>
-        <button class="section-head" data-toggle aria-expanded="true">
-          <span>Rendering Style</span><span class="chev">⌄</span>
-        </button>
-        <div class="section-body">
-          <div class="field">
-            <label for="template">Prompt Library</label>
-            <select id="template"></select>
-          </div>
-
-          <div class="field" id="field-theme"></div>
-
-          <div class="grid">
-            <div class="field" id="field-style"></div>
-            <div class="field" id="field-lighting"></div>
-            <div class="field" id="field-material"></div>
-            <div class="field" id="field-background"></div>
-            <div class="field" id="field-entourage"></div>
-            <div class="field" id="field-weather"></div>
-          </div>
+        <div class="control">
+          <label class="lbl" for="quality">Quality</label>
+          <select id="quality"></select>
         </div>
       </div>
 
-      <!-- Custom Directions -->
-      <div class="section" data-section>
-        <button class="section-head" data-toggle aria-expanded="true">
-          <span>Custom Directions</span><span class="chev">⌄</span>
-        </button>
-        <div class="section-body">
-          <p class="hint">Add any specific instructions for the AI renderer.</p>
-          <textarea id="custom" rows="3" placeholder="e.g. add rooftop solar panels, emphasize the main entrance, use a warmer palette…"></textarea>
-        </div>
-      </div>
-
-      <!-- Output Settings -->
-      <div class="section" data-section>
-        <button class="section-head" data-toggle aria-expanded="true">
-          <span>Output Settings</span><span class="chev">⌄</span>
-        </button>
-        <div class="section-body">
-          <div class="grid">
-            <div class="field">
-              <label for="aspect">Aspect Ratio</label>
-              <select id="aspect"></select>
-            </div>
-            <div class="field">
-              <label for="quality">Quality</label>
-              <select id="quality"></select>
-            </div>
-          </div>
-        </div>
+      <div class="control custom-control">
+        <label class="lbl" for="custom">Custom directions</label>
+        <input id="custom" type="text" placeholder="e.g. add rooftop solar panels, emphasize the main entrance…" />
       </div>
     </section>
 
-    <!-- ============ Preview panel ============ -->
-    <section class="preview">
-      <header class="preview-head">
-        <div>
-          <h2>Prompt Preview</h2>
-          <p class="sub">This is the exact text to send to your AI image generator alongside the exported view.</p>
+    <hr class="rule" />
+
+    <!-- ============ Prompt (the hero) ============ -->
+    <section class="stage">
+      <div class="stage-head">
+        <span class="kicker">The Prompt</span>
+        <div class="stage-actions">
+          <span class="copied" id="copied" hidden>Copied ✓</span>
+          <button class="copy-btn" id="copyBtn">Copy prompt</button>
         </div>
-        <div class="actions">
-          <button class="btn ghost" id="copyBtn">Copy</button>
-        </div>
-      </header>
-      <pre id="output" class="output" tabindex="0"></pre>
-      <footer class="preview-foot">
-        <span id="charCount" class="count"></span>
-        <span class="copied" id="copied" hidden>Copied to clipboard ✓</span>
-      </footer>
+      </div>
+
+      <p class="lede">Paste this alongside your exported view in Gemini, Imagen, DALL·E, Midjourney or any image model.</p>
+
+      <div id="output" class="prompt" tabindex="0"></div>
+
+      <p class="count" id="charCount"></p>
     </section>
-  </div>
+  </main>
 
   <script src="data.js"></script>
   <script src="app.js"></script>
