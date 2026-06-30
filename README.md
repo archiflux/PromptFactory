@@ -1,15 +1,12 @@
-# Charrette Image — Rendering Prompt Generator
+# Prompt Factory — Rendering Prompt Generator
 
 A small, dependency-free webapp that turns an **unrendered Revit / CAD / SketchUp
 view** into a crafted, copy-paste prompt for any AI image generator
-(Gemini Pro Image / Nano Banana, Imagen, DALL·E, Midjourney, FLUX, SDXL, …).
+(Gemini Pro Image, Imagen, DALL·E, Midjourney, FLUX, SDXL, …).
 
-It mirrors the "Charrette Image" Revit panel workflow: pick a rendering style
-from dropdowns, the app assembles a prompt that **preserves the source
-geometry** and re-renders it in the look you want, then you copy the prompt and
-paste it alongside your exported image.
-
-![workflow](docs/workflow.png)
+Pick a rendering style from dropdowns and the app assembles a prompt that
+**preserves the source geometry** and re-renders it in the look you want, then
+you copy the prompt and paste it alongside your exported image.
 
 ## Use it
 
@@ -31,9 +28,6 @@ start index.html       # Windows
 3. Set **Output Settings** (aspect ratio, quality).
 4. Click **Copy**.
 5. Paste the prompt into your AI image tool and attach the exported image.
-
-The **Reference Image** drop zone is a local-only convenience preview — the file
-never leaves your machine and is not uploaded anywhere.
 
 ## How it works
 
@@ -64,6 +58,6 @@ Add a whole new preset under `templates` with its own `base` framing text and
 | File | Purpose |
 |------|---------|
 | `index.html` | Layout & panels |
-| `styles.css` | Dark "charrette" theme |
+| `styles.css` | Modern dark theme |
 | `app.js` | Dropdown wiring + prompt assembly |
 | `data.js` | The prompt library (all options & presets) |

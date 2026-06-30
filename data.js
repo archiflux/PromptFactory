@@ -7,26 +7,6 @@
  */
 
 const RENDER_DATA = {
-  /* Target image model. Purely informational in the prompt header, but some
-   * models get a small tail of model-specific guidance appended. */
-  models: [
-    { value: "gemini-3-pro-image", label: "gemini-3-pro-image" },
-    { value: "gemini-2.5-flash-image", label: "gemini-2.5-flash-image" },
-    { value: "nano-banana", label: "nano-banana (Gemini)" },
-    { value: "imagen-3", label: "Imagen 3" },
-    { value: "dall-e-3", label: "DALL·E 3" },
-    { value: "midjourney", label: "Midjourney" },
-    { value: "flux-1", label: "FLUX.1" },
-    { value: "stable-diffusion-xl", label: "Stable Diffusion XL" },
-    { value: "generic", label: "Generic / any model" },
-  ],
-
-  /* Model-specific tail appended to the prompt (kept short and optional). */
-  modelHints: {
-    midjourney: "--ar {ar} --style raw --v 6.1",
-    "stable-diffusion-xl": "Negative prompt: cartoon, distorted geometry, extra windows, warped perspective, blurry, lowres.",
-  },
-
   /*
    * Prompt Library presets. `base` is the framing instruction that protects the
    * source geometry. `defaults` pre-selects dropdowns so a preset feels complete

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Charrette Image — Rendering Prompt Generator</title>
+  <title>Prompt Factory — Rendering Prompt Generator</title>
   <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -11,17 +11,15 @@
     <!-- ============ Controls panel ============ -->
     <section class="panel" id="panel">
       <header class="panel-head">
-        <h1>Charrette Image</h1>
-        <p class="sub">Turn an unrendered Revit / CAD view into a crafted AI rendering prompt.</p>
-      </header>
-
-      <div class="field model-field">
-        <label for="model">Current Model</label>
-        <div class="model-row">
-          <select id="model"></select>
-          <button class="icon-btn" id="resetBtn" title="Reset all options">⟳</button>
+        <div class="brand">
+          <span class="logo">PF</span>
+          <div>
+            <h1>Prompt Factory</h1>
+            <p class="sub">Turn an unrendered Revit / CAD view into a crafted AI rendering prompt.</p>
+          </div>
         </div>
-      </div>
+        <button class="icon-btn" id="resetBtn" title="Reset all options">Reset</button>
+      </header>
 
       <!-- Rendering Style -->
       <div class="section" data-section>
@@ -44,24 +42,6 @@
             <div class="field" id="field-entourage"></div>
             <div class="field" id="field-weather"></div>
           </div>
-        </div>
-      </div>
-
-      <!-- Reference Image -->
-      <div class="section" data-section>
-        <button class="section-head" data-toggle aria-expanded="false">
-          <span>Reference Image</span><span class="chev">⌄</span>
-        </button>
-        <div class="section-body collapsed">
-          <p class="hint">Optional. Drop your exported view here as a reminder to attach it in your AI tool — it stays on your machine and is never uploaded.</p>
-          <label class="dropzone" id="dropzone">
-            <input type="file" id="fileInput" accept="image/*" hidden />
-            <div class="dz-inner" id="dzInner">
-              <span class="dz-icon">⬚</span>
-              <span>Click or drag an exported image here</span>
-            </div>
-            <img id="thumb" alt="reference preview" hidden />
-          </label>
         </div>
       </div>
 

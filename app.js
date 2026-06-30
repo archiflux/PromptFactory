@@ -44,10 +44,8 @@
     }
   }
 
-  /* ---------- Populate the static selects (model, template, output) ---------- */
+  /* ---------- Populate the static selects (template, output) ---------- */
   function buildStatic() {
-    fillSelect($("#model"), D.models);
-
     const tmplSelect = $("#template");
     fillSelect(
       tmplSelect,
@@ -57,7 +55,6 @@
     fillSelect($("#aspect"), D.output.aspect);
     fillSelect($("#quality"), D.output.quality);
 
-    $("#model").addEventListener("change", render);
     $("#aspect").addEventListener("change", render);
     $("#quality").addEventListener("change", render);
     $("#custom").addEventListener("input", render);
@@ -121,14 +118,6 @@
       body += " Additional directions: " + custom + (/[.!?]$/.test(custom) ? "" : ".");
     }
 
-    // 6. Model-specific tail.
-    const model = $("#model").value;
-    const hint = D.modelHints[model];
-    if (hint) {
-      const ar = aspectOpt && aspectOpt.ratio ? aspectOpt.ratio : "16:9";
-      body += "\n\n" + hint.replace("{ar}", ar);
-    }
-
     return body;
   }
 
@@ -172,34 +161,6 @@
     });
   }
 
-  /* ---------- Reference image (local preview only) ---------- */
-  function wireDropzone() {
-    const dz = $("#dropzone");
-    const input = $("#fileInput");
-    const thumb = $("#thumb");
-    const inner = $("#dzInner");
-
-    function show(file) {
-      if (!file || !file.type.startsWith("image/")) return;
-      const url = URL.createObjectURL(file);
-      thumb.src = url;
-      thumb.hidden = false;
-      inner.hidden = true;
-    }
-
-    input.addEventListener("change", () => show(input.files[0]));
-    ["dragenter", "dragover"].forEach((ev) =>
-      dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.add("drag"); })
-    );
-    ["dragleave", "drop"].forEach((ev) =>
-      dz.addEventListener(ev, (e) => { e.preventDefault(); dz.classList.remove("drag"); })
-    );
-    dz.addEventListener("drop", (e) => {
-      const file = e.dataTransfer.files && e.dataTransfer.files[0];
-      show(file);
-    });
-  }
-
   /* ---------- Reset ---------- */
   function wireReset() {
     $("#resetBtn").addEventListener("click", () => {
@@ -217,7 +178,6 @@
     buildStatic();
     buildFields();
     wireSections();
-    wireDropzone();
     wireReset();
     $("#copyBtn").addEventListener("click", copyPrompt);
 
