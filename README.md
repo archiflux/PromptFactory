@@ -53,6 +53,15 @@ repo root.
 The included [`vercel.json`](vercel.json) enables clean URLs; no other config is
 needed.
 
+### Web Analytics
+
+`index.html` already includes the Vercel Web Analytics script
+(`/_vercel/insights/script.js`), which Vercel serves automatically for the
+deployment — no npm package or build step is required for this static site. Just
+enable it once in the Vercel dashboard: **Project → Analytics → Enable Web
+Analytics**. Data appears after the next page views (it stays at 0 until the
+script is live on the deployed site and someone visits).
+
 ## How it works
 
 Every dropdown option in [`data.js`](data.js) carries a `fragment`: a complete
