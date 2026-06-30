@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Charrette Image — Rendering Prompt Generator</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <!-- ============ Controls panel ============ -->
+    <section class="panel" id="panel">
+      <header class="panel-head">
+        <h1>Charrette Image</h1>
+        <p class="sub">Turn an unrendered Revit / CAD view into a crafted AI rendering prompt.</p>
+      </header>
+
+      <div class="field model-field">
+        <label for="model">Current Model</label>
+        <div class="model-row">
+          <select id="model"></select>
+          <button class="icon-btn" id="resetBtn" title="Reset all options">⟳</button>
+        </div>
+      </div>
+
+      <!-- Rendering Style -->
+      <div class="section" data-section>
+        <button class="section-head" data-toggle aria-expanded="true">
+          <span>Rendering Style</span><span class="chev">⌄</span>
+        </button>
+        <div class="section-body">
+          <div class="field">
+            <label for="template">Prompt Library</label>
+            <select id="template"></select>
+          </div>
+
+          <div class="field" id="field-theme"></div>
+
+          <div class="grid">
+            <div class="field" id="field-style"></div>
+            <div class="field" id="field-lighting"></div>
+            <div class="field" id="field-material"></div>
+            <div class="field" id="field-background"></div>
+            <div class="field" id="field-entourage"></div>
+            <div class="field" id="field-weather"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Reference Image -->
+      <div class="section" data-section>
+        <button class="section-head" data-toggle aria-expanded="false">
+          <span>Reference Image</span><span class="chev">⌄</span>
+        </button>
+        <div class="section-body collapsed">
+          <p class="hint">Optional. Drop your exported view here as a reminder to attach it in your AI tool — it stays on your machine and is never uploaded.</p>
+          <label class="dropzone" id="dropzone">
+            <input type="file" id="fileInput" accept="image/*" hidden />
+            <div class="dz-inner" id="dzInner">
+              <span class="dz-icon">⬚</span>
+              <span>Click or drag an exported image here</span>
+            </div>
+            <img id="thumb" alt="reference preview" hidden />
+          </label>
+        </div>
+      </div>
+
+      <!-- Custom Directions -->
+      <div class="section" data-section>
+        <button class="section-head" data-toggle aria-expanded="true">
+          <span>Custom Directions</span><span class="chev">⌄</span>
+        </button>
+        <div class="section-body">
+          <p class="hint">Add any specific instructions for the AI renderer.</p>
+          <textarea id="custom" rows="3" placeholder="e.g. add rooftop solar panels, emphasize the main entrance, use a warmer palette…"></textarea>
+        </div>
+      </div>
+
+      <!-- Output Settings -->
+      <div class="section" data-section>
+        <button class="section-head" data-toggle aria-expanded="true">
+          <span>Output Settings</span><span class="chev">⌄</span>
+        </button>
+        <div class="section-body">
+          <div class="grid">
+            <div class="field">
+              <label for="aspect">Aspect Ratio</label>
+              <select id="aspect"></select>
+            </div>
+            <div class="field">
+              <label for="quality">Quality</label>
+              <select id="quality"></select>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ Preview panel ============ -->
+    <section class="preview">
+      <header class="preview-head">
+        <div>
+          <h2>Prompt Preview</h2>
+          <p class="sub">This is the exact text to send to your AI image generator alongside the exported view.</p>
+        </div>
+        <div class="actions">
+          <button class="btn ghost" id="copyBtn">Copy</button>
+        </div>
+      </header>
+      <pre id="output" class="output" tabindex="0"></pre>
+      <footer class="preview-foot">
+        <span id="charCount" class="count"></span>
+        <span class="copied" id="copied" hidden>Copied to clipboard ✓</span>
+      </footer>
+    </section>
+  </div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
