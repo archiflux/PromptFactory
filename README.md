@@ -24,8 +24,8 @@ start index.html       # Windows
 
 1. Export your unrendered view (Revit, Rhino, SketchUp, etc.) as an image.
 2. Pick a **Preset** — it sets the framing and every style dropdown at once —
-   then tune **Style, Lighting, Material, Background, Entourage, Weather**,
-   aspect ratio, quality, and any **Custom directions**.
+   then tune **Style, Lighting, Material, Interior style, Background, Entourage,
+   Weather**, aspect ratio, quality, and any **Custom directions**.
 3. Click **Copy prompt**.
 4. Paste the prompt into your AI image tool and attach the exported image.
 
@@ -37,6 +37,11 @@ preset's defaults, the heading shows a **(Customised)** flag.
 Fragment wording follows architectural-render prompting best practice —
 specific materials, named lighting, reflections and realism cues, human
 activity, and photographic / editorial quality tags.
+
+The library spans exterior, **interior**, concept and artistic looks: interior
+design styles (Scandinavian, Japandi, mid-century, industrial, corporate,
+traditional, luxury and more) and hand-crafted render styles including a
+mixed-media **collage** style, gouache, oil, charcoal and pen-and-wash.
 
 ## Deploy to Vercel
 

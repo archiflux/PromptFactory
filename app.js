@@ -10,7 +10,7 @@
 
   // Fields the prompt is built from, in order. These six are also what a
   // preset configures, so they drive the "(Customised)" indicator.
-  const FIELD_ORDER = ["style", "lighting", "material", "background", "entourage", "weather"];
+  const FIELD_ORDER = ["style", "lighting", "material", "interior", "background", "entourage", "weather"];
 
   const state = { preset: D.presets[0].value };
   let prevSegments = null; // snapshot of last render for change detection

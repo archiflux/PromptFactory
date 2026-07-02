@@ -3,11 +3,8 @@
  *
  * Each dropdown option carries a `fragment`: a complete, descriptive sentence
  * stitched into the final prompt. A `preset` bundles a framing instruction
- * (`base`) with a full set of field selections, so one pick configures the look.
- *
- * Fragment wording follows architectural-render prompting best practice:
- * specific materials, named lighting, reflections + realism cues, human
- * activity, and photographic / editorial quality tags.
+ * (`base`) with a full set of field selections (one value per field), so one
+ * pick configures the whole look. Every preset MUST set every field key.
  */
 
 /* Framing instructions — these protect the source geometry. */
@@ -38,65 +35,96 @@ const BASES = {
     "Do not move or resize any buildings or site elements. " +
     "Render a contextual, high-fidelity aerial visualization using the following style instructions:",
   free:
-    "Render this exported architectural view as a high-quality, professional image. " +
+    "Render this exported architectural view as a high-quality, expressive image. " +
     "Keep the camera angle and overall composition, and apply the following style instructions:",
 };
 
 const RENDER_DATA = {
   /*
-   * Combined preset dropdown. `set` pre-selects every field so a preset feels
-   * complete instantly. The six keys in `set` are also what the UI compares
-   * against to show the "(Customised)" flag.
+   * Combined preset dropdown. `set` pre-selects every field. The keys in `set`
+   * are also what the UI compares against to show the "(Customised)" flag, so
+   * every preset lists all seven fields.
    */
   presets: [
+    // — Exterior —
     { value: "urban-day", label: "Urban Day — Street Level", base: BASES.exterior,
-      set: { style: "photorealistic", lighting: "overcast", material: "brick-steel", background: "urban", entourage: "busy", weather: "as-is" } },
+      set: { style: "photorealistic", lighting: "overcast", material: "brick-steel", interior: "none", background: "urban", entourage: "busy", weather: "as-is" } },
     { value: "golden-hero", label: "Golden Hour Hero", base: BASES.hero,
-      set: { style: "photorealistic", lighting: "golden-hour", material: "glass-curtain", background: "urban", entourage: "moderate", weather: "clear" } },
+      set: { style: "photorealistic", lighting: "golden-hour", material: "glass-curtain", interior: "none", background: "urban", entourage: "moderate", weather: "clear" } },
     { value: "urban-night", label: "Urban Night", base: BASES.hero,
-      set: { style: "cinematic", lighting: "night", material: "glass-curtain", background: "rooftop-skyline", entourage: "nightlife", weather: "clear" } },
+      set: { style: "cinematic", lighting: "night", material: "glass-curtain", interior: "none", background: "rooftop-skyline", entourage: "nightlife", weather: "clear" } },
     { value: "blue-hour", label: "Blue Hour Dusk", base: BASES.hero,
-      set: { style: "photorealistic", lighting: "blue-hour", material: "glass-curtain", background: "urban", entourage: "moderate", weather: "partly-cloudy" } },
-    { value: "interior-day", label: "Interior — Daylight", base: BASES.interior,
-      set: { style: "photorealistic", lighting: "soft-diffused", material: "timber", background: "keep", entourage: "furnished", weather: "as-is" } },
-    { value: "interior-evening", label: "Interior — Evening", base: BASES.interior,
-      set: { style: "cinematic", lighting: "warm-interior", material: "timber", background: "keep", entourage: "furnished", weather: "as-is" } },
-    { value: "editorial-hero", label: "Editorial Magazine", base: BASES.hero,
-      set: { style: "editorial", lighting: "soft-diffused", material: "mixed-modern", background: "isolated", entourage: "people", weather: "partly-cloudy" } },
-    { value: "concept-massing", label: "Concept Massing", base: BASES.concept,
-      set: { style: "white-model", lighting: "bright-midday", material: "white-render", background: "isolated", entourage: "quiet", weather: "clear" } },
-    { value: "scale-model", label: "Tilt-Shift Scale Model", base: BASES.concept,
-      set: { style: "scale-model", lighting: "studio", material: "mixed-modern", background: "isolated", entourage: "people", weather: "as-is" } },
-    { value: "aerial-masterplan", label: "Aerial Masterplan", base: BASES.aerial,
-      set: { style: "arch-viz", lighting: "bright-midday", material: "mixed-modern", background: "urban", entourage: "moderate", weather: "partly-cloudy" } },
+      set: { style: "photorealistic", lighting: "blue-hour", material: "glass-curtain", interior: "none", background: "urban", entourage: "moderate", weather: "partly-cloudy" } },
     { value: "suburban-day", label: "Suburban Daylight", base: BASES.exterior,
-      set: { style: "photorealistic", lighting: "bright-midday", material: "white-render", background: "suburban", entourage: "families", weather: "clear" } },
+      set: { style: "photorealistic", lighting: "bright-midday", material: "white-render", interior: "none", background: "suburban", entourage: "families", weather: "clear" } },
     { value: "waterfront-dusk", label: "Waterfront Dusk", base: BASES.hero,
-      set: { style: "photorealistic", lighting: "golden-hour", material: "glass-curtain", background: "waterfront", entourage: "moderate", weather: "dramatic-sky" } },
+      set: { style: "photorealistic", lighting: "golden-hour", material: "glass-curtain", interior: "none", background: "waterfront", entourage: "moderate", weather: "dramatic-sky" } },
     { value: "forest-retreat", label: "Forest Retreat", base: BASES.hero,
-      set: { style: "photorealistic", lighting: "soft-diffused", material: "blackened-timber", background: "forest", entourage: "quiet", weather: "partly-cloudy" } },
+      set: { style: "photorealistic", lighting: "soft-diffused", material: "blackened-timber", interior: "none", background: "forest", entourage: "quiet", weather: "partly-cloudy" } },
     { value: "desert-modern", label: "Desert Modern", base: BASES.hero,
-      set: { style: "photorealistic", lighting: "harsh-noon", material: "rammed-earth", background: "desert", entourage: "quiet", weather: "clear" } },
+      set: { style: "photorealistic", lighting: "harsh-noon", material: "rammed-earth", interior: "none", background: "desert", entourage: "quiet", weather: "clear" } },
     { value: "mountain-lodge", label: "Mountain Lodge", base: BASES.hero,
-      set: { style: "photorealistic", lighting: "golden-hour", material: "stone", background: "mountains", entourage: "moderate", weather: "clear" } },
+      set: { style: "photorealistic", lighting: "golden-hour", material: "stone", interior: "none", background: "mountains", entourage: "moderate", weather: "clear" } },
     { value: "zen-pavilion", label: "Zen Garden Pavilion", base: BASES.hero,
-      set: { style: "minimalist", lighting: "soft-diffused", material: "timber", background: "japanese-garden", entourage: "quiet", weather: "mist-morning" } },
+      set: { style: "minimalist", lighting: "soft-diffused", material: "timber", interior: "none", background: "japanese-garden", entourage: "quiet", weather: "mist-morning" } },
     { value: "rainy-moody", label: "Rainy & Moody", base: BASES.hero,
-      set: { style: "cinematic", lighting: "moody", material: "concrete", background: "urban", entourage: "quiet", weather: "rain" } },
+      set: { style: "cinematic", lighting: "moody", material: "concrete", interior: "none", background: "urban", entourage: "quiet", weather: "rain" } },
     { value: "snowy-scene", label: "Snowy Scene", base: BASES.hero,
-      set: { style: "photorealistic", lighting: "overcast", material: "stone", background: "snowfield", entourage: "quiet", weather: "snow" } },
+      set: { style: "photorealistic", lighting: "overcast", material: "stone", interior: "none", background: "snowfield", entourage: "quiet", weather: "snow" } },
     { value: "cinematic-night", label: "Cinematic Neon Night", base: BASES.hero,
-      set: { style: "cinematic", lighting: "neon", material: "dark-brick", background: "urban", entourage: "nightlife", weather: "rain" } },
+      set: { style: "cinematic", lighting: "neon", material: "dark-brick", interior: "none", background: "urban", entourage: "nightlife", weather: "rain" } },
+
+    // — Interiors —
+    { value: "interior-day", label: "Interior — Daylight", base: BASES.interior,
+      set: { style: "photorealistic", lighting: "soft-diffused", material: "timber", interior: "scandinavian", background: "keep", entourage: "furnished", weather: "as-is" } },
+    { value: "interior-evening", label: "Interior — Evening", base: BASES.interior,
+      set: { style: "cinematic", lighting: "warm-interior", material: "timber", interior: "mid-century", background: "keep", entourage: "furnished", weather: "as-is" } },
+    { value: "scandi-interior", label: "Scandinavian Interior", base: BASES.interior,
+      set: { style: "photorealistic", lighting: "soft-diffused", material: "warm-oak", interior: "scandinavian", background: "keep", entourage: "furnished", weather: "as-is" } },
+    { value: "japandi-interior", label: "Japandi Interior", base: BASES.interior,
+      set: { style: "photorealistic", lighting: "soft-diffused", material: "timber", interior: "japandi", background: "keep", entourage: "styled-empty", weather: "as-is" } },
+    { value: "warm-minimal-interior", label: "Warm Minimalist Interior", base: BASES.interior,
+      set: { style: "photorealistic", lighting: "soft-diffused", material: "microcement", interior: "warm-minimal", background: "keep", entourage: "furnished", weather: "as-is" } },
+    { value: "midcentury-living", label: "Mid-Century Living Room", base: BASES.interior,
+      set: { style: "photorealistic", lighting: "warm-interior", material: "warm-oak", interior: "mid-century", background: "keep", entourage: "furnished", weather: "as-is" } },
+    { value: "industrial-loft", label: "Industrial Loft", base: BASES.interior,
+      set: { style: "photorealistic", lighting: "warm-interior", material: "dark-brick", interior: "industrial", background: "keep", entourage: "furnished", weather: "as-is" } },
+    { value: "corporate-office", label: "Corporate Office", base: BASES.interior,
+      set: { style: "arch-viz", lighting: "studio", material: "glass-curtain", interior: "corporate", background: "keep", entourage: "office-workers", weather: "as-is" } },
+    { value: "hotel-lobby", label: "Luxury Hotel Lobby", base: BASES.interior,
+      set: { style: "cinematic", lighting: "warm-interior", material: "marble", interior: "luxury", background: "keep", entourage: "diners", weather: "as-is" } },
+    { value: "traditional-interior", label: "Traditional Interior", base: BASES.interior,
+      set: { style: "photorealistic", lighting: "warm-interior", material: "warm-oak", interior: "traditional", background: "keep", entourage: "furnished", weather: "as-is" } },
+    { value: "biophilic-atrium", label: "Biophilic Atrium", base: BASES.interior,
+      set: { style: "photorealistic", lighting: "volumetric", material: "timber", interior: "biophilic", background: "keep", entourage: "moderate", weather: "as-is" } },
+
+    // — Concept / massing —
+    { value: "editorial-hero", label: "Editorial Magazine", base: BASES.hero,
+      set: { style: "editorial", lighting: "soft-diffused", material: "mixed-modern", interior: "none", background: "isolated", entourage: "people", weather: "partly-cloudy" } },
+    { value: "concept-massing", label: "Concept Massing", base: BASES.concept,
+      set: { style: "white-model", lighting: "bright-midday", material: "white-render", interior: "none", background: "isolated", entourage: "quiet", weather: "clear" } },
+    { value: "scale-model", label: "Tilt-Shift Scale Model", base: BASES.concept,
+      set: { style: "scale-model", lighting: "studio", material: "mixed-modern", interior: "none", background: "isolated", entourage: "people", weather: "as-is" } },
+    { value: "aerial-masterplan", label: "Aerial Masterplan", base: BASES.aerial,
+      set: { style: "arch-viz", lighting: "bright-midday", material: "mixed-modern", interior: "none", background: "urban", entourage: "moderate", weather: "partly-cloudy" } },
+
+    // — Artistic / hand-crafted —
+    { value: "collage-concept", label: "Collage Concept (mixed media)", base: BASES.free,
+      set: { style: "collage", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "park", entourage: "people", weather: "partly-cloudy" } },
+    { value: "collage-interior", label: "Collage Interior", base: BASES.interior,
+      set: { style: "collage", lighting: "warm-interior", material: "as-is-mat", interior: "bohemian", background: "keep", entourage: "people", weather: "as-is" } },
+    { value: "gouache-concept", label: "Gouache Concept", base: BASES.free,
+      set: { style: "gouache", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "urban", entourage: "people", weather: "as-is" } },
     { value: "monochrome", label: "Black & White Fine Art", base: BASES.hero,
-      set: { style: "monochrome", lighting: "dramatic", material: "concrete", background: "isolated", entourage: "people", weather: "dramatic-sky" } },
+      set: { style: "monochrome", lighting: "dramatic", material: "concrete", interior: "none", background: "isolated", entourage: "people", weather: "dramatic-sky" } },
     { value: "watercolor", label: "Watercolor Presentation", base: BASES.free,
-      set: { style: "watercolor", lighting: "soft-diffused", material: "as-is-mat", background: "park", entourage: "people", weather: "partly-cloudy" } },
+      set: { style: "watercolor", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "park", entourage: "people", weather: "partly-cloudy" } },
     { value: "pencil-sketch", label: "Pencil Line Sketch", base: BASES.free,
-      set: { style: "line-sketch", lighting: "soft-diffused", material: "as-is-mat", background: "isolated", entourage: "people", weather: "as-is" } },
+      set: { style: "line-sketch", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "isolated", entourage: "people", weather: "as-is" } },
     { value: "blueprint", label: "Blueprint Concept", base: BASES.free,
-      set: { style: "blueprint", lighting: "soft-diffused", material: "as-is-mat", background: "isolated", entourage: "quiet", weather: "as-is" } },
+      set: { style: "blueprint", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "isolated", entourage: "quiet", weather: "as-is" } },
     { value: "free-style", label: "Free Style (minimal)", base: BASES.free,
-      set: { style: "cinematic", lighting: "dramatic", material: "as-is-mat", background: "keep", entourage: "as-is-ent", weather: "as-is" } },
+      set: { style: "cinematic", lighting: "dramatic", material: "as-is-mat", interior: "none", background: "keep", entourage: "as-is-ent", weather: "as-is" } },
   ],
 
   /* Dropdown fields, in the order their fragments appear in the prompt. */
@@ -111,9 +139,17 @@ const RENDER_DATA = {
         { value: "editorial", label: "Editorial magazine", fragment: "Render as a polished editorial architectural photograph with magazine-quality composition, refined tonal balance, and elegant negative space, as if shot for a leading design publication." },
         { value: "vintage-film", label: "Vintage film", fragment: "Render with a vintage analogue film look: a warm colour cast, soft organic grain, subtle halation around highlights, and gently faded tones reminiscent of 35mm photography." },
         { value: "monochrome", label: "Black & white", fragment: "Render as a dramatic fine-art black-and-white photograph with deep contrast, rich tonal gradation, and a sculptural play of light and shadow across the forms." },
+
+        // — Artistic / hand-crafted —
+        { value: "collage", label: "Collage (mixed media)", fragment: "Render in a mixed-media collage style: build walls, floors, and surfaces from layered torn and cut paper pieces with visible seams and paper-grain texture, then paint over the collage with gouache and acrylic to add detail, shadow, and form; use bold flat colour blocking, suggest materials through paper texture rather than photorealism, and render any figures simply and almost silhouetted with minimal facial detail — a tactile, slightly abstracted realism that conveys atmosphere and material contrast, in the manner of architectural concept collage and mood-board visualisation." },
+        { value: "gouache", label: "Gouache painting", fragment: "Render as a gouache painting with matte, opaque colour, soft confident brushwork, gentle tonal blending, and a warm hand-painted illustrative quality." },
+        { value: "oil-painting", label: "Oil painting", fragment: "Render as a textured oil painting with visible impasto brushstrokes, richly blended colour, and an atmospheric fine-art quality." },
         { value: "watercolor", label: "Watercolor sketch", fragment: "Render as a loose architectural watercolour: translucent washes, soft bleeding edges, delicate linework, and visible cold-press paper texture, with an airy hand-painted feel." },
         { value: "line-sketch", label: "Pencil / line sketch", fragment: "Render as a hand-drawn graphite line sketch with confident contour lines, light cross-hatched shading, and a refined presentation-drawing character." },
+        { value: "charcoal", label: "Charcoal drawing", fragment: "Render as an expressive charcoal drawing with smudged tonal shading, bold gestural strokes, and a moody monochrome character." },
         { value: "ink-marker", label: "Ink & marker", fragment: "Render as an ink-and-marker concept sketch with bold confident outlines, layered marker shading, and a lively, designerly hand." },
+        { value: "pen-wash", label: "Pen & wash", fragment: "Render as a pen-and-ink line drawing with a loose watercolour wash, crisp confident linework, and a fresh architectural-sketch feel." },
+        { value: "risograph", label: "Risograph / screen-print", fragment: "Render as a risograph / screen-print with a limited palette of two or three flat spot colours, slight mis-registration, grainy ink texture, and a bold graphic poster feel." },
         { value: "blueprint", label: "Blueprint", fragment: "Render as a classic blueprint: precise white technical line work on a deep cyan-blue ground, with annotation-style clarity and clean edges." },
         { value: "diagram", label: "Conceptual diagram", fragment: "Render as a clean conceptual diagram with flat colour fills, simplified surfaces, clear visual hierarchy, and an analytical, explanatory feel." },
         { value: "isometric", label: "Isometric illustration", fragment: "Render as a precise isometric illustration with flat, even lighting, clean geometry, and a crafted, illustrative quality." },
@@ -152,10 +188,14 @@ const RENDER_DATA = {
         { value: "dark-brick", label: "Dark brick", fragment: "Clad the building in dark charcoal brickwork with deep raked mortar joints, a matte surface, and rich, moody tonal depth." },
         { value: "glass-curtain", label: "Glass curtain wall", fragment: "Wrap the building in a sleek floor-to-ceiling glazed curtain wall with slim mullions, crystal-clear and subtly reflective glass, and crisp sky-and-context reflections." },
         { value: "concrete", label: "Concrete / brutalist", fragment: "Finish the building in board-formed exposed concrete with a visible timber-grain imprint, fine surface porosity, and a refined brutalist character." },
+        { value: "microcement", label: "Microcement / polished concrete", fragment: "Finish surfaces in seamless microcement and polished concrete with a smooth, matte, tactile surface and gentle tonal movement." },
         { value: "timber", label: "Timber / wood", fragment: "Clad the building in warm natural timber with visible grain, expressed board joints, and a soft satin finish that lends tactile warmth." },
+        { value: "warm-oak", label: "Warm oak joinery", fragment: "Line the space in warm oak joinery and timber flooring with visible grain, seamless detailing, and a soft satin finish." },
         { value: "blackened-timber", label: "Blackened timber (shou sugi ban)", fragment: "Clad the building in blackened charred timber (shou sugi ban) with a deep matte-black, textured surface and subtle silver highlights catching the grain." },
         { value: "stone", label: "Natural stone", fragment: "Clad the building in natural stone with rich texture, varied coursing, and authentic tonal variation from block to block." },
         { value: "marble", label: "Marble", fragment: "Finish key surfaces in polished marble with elegant veining, soft translucency, and a luxurious reflective sheen." },
+        { value: "terrazzo", label: "Terrazzo", fragment: "Finish surfaces in terrazzo with speckled aggregate chips set in a polished matrix, in a soft contemporary palette." },
+        { value: "brushed-brass", label: "Brushed brass accents", fragment: "Introduce brushed brass and warm metal accents with a soft satin lustre set against darker surfaces." },
         { value: "corten", label: "Corten / weathering steel", fragment: "Clad the building in weathering Corten steel with a rich rust-orange patina, subtle streaking, and a warm matte metallic surface." },
         { value: "terracotta", label: "Terracotta", fragment: "Clad the building in warm terracotta tiles or fired-clay baguettes, with an earthy matte finish and gentle colour variation." },
         { value: "zinc", label: "Standing-seam zinc", fragment: "Roof and clad the building in standing-seam zinc with crisp seams, a soft grey-blue sheen, and a refined contemporary finish." },
@@ -165,6 +205,29 @@ const RENDER_DATA = {
         { value: "rammed-earth", label: "Rammed earth", fragment: "Build the walls in rammed earth with horizontal sediment striations, an earthy natural palette, and a warm, tactile surface." },
         { value: "polished-plaster", label: "Polished plaster", fragment: "Finish surfaces in smooth polished Venetian-style plaster with a soft satin sheen and gentle tonal movement." },
         { value: "as-is-mat", label: "Keep source materials", fragment: "Keep the materials implied by the source view, simply rendered realistically with believable texture, reflectance, and subtle weathering." },
+      ],
+    },
+    interior: {
+      label: "Interior style",
+      options: [
+        { value: "none", label: "Not specified", fragment: "" },
+        { value: "scandinavian", label: "Scandinavian", fragment: "Furnish and style the interior in a Scandinavian manner: pale oak and birch, soft neutral and greige textiles, clean-lined functional furniture, cosy hygge layering, houseplants, and an airy, light-filled calm." },
+        { value: "japandi", label: "Japandi", fragment: "Furnish and style the interior in a Japandi manner — a fusion of Japanese and Scandinavian design: low-profile furniture, raw wood, linen, rice paper and textured ceramics, a soft earthy palette of greige, sand and anthracite, and a serene, wabi-sabi calm that embraces natural imperfection." },
+        { value: "warm-minimal", label: "Warm minimalist", fragment: "Furnish and style the interior as warm minimalism: uncluttered space with a few high-quality pieces, soft neutral tones, tactile natural textures, warm woods, and generous breathing room and natural light." },
+        { value: "minimalist", label: "Strict minimalist", fragment: "Furnish and style the interior as strict minimalism: a restrained neutral palette of white, grey and warm earth tones, very few carefully chosen furnishings, clean lines, and empty space treated as an active design element." },
+        { value: "mid-century", label: "Mid-century modern", fragment: "Furnish and style the interior in mid-century modern: teak and walnut furniture with tapered legs, organic curves, warm mustard, olive and burnt-orange accents, statement lighting, and a retro-yet-timeless feel." },
+        { value: "industrial", label: "Industrial", fragment: "Furnish and style the interior in an industrial manner: exposed brick and concrete, black steel framing, reclaimed timber, Edison-bulb lighting, leather and raw-metal furniture, and an open warehouse-loft character." },
+        { value: "contemporary", label: "Hypermodern / contemporary", fragment: "Furnish and style the interior as sleek hypermodern contemporary: crisp minimal forms, high-gloss and matte surfaces, integrated technology, a monochrome palette with bold accents, and a polished, cutting-edge feel." },
+        { value: "corporate", label: "Corporate / commercial", fragment: "Furnish and style the interior as a professional corporate workplace: modular desks and ergonomic seating, acoustic panels, glass partitions, brand-neutral greys and blues with timber accents, and a clean, productive office atmosphere." },
+        { value: "traditional", label: "Traditional / classic", fragment: "Furnish and style the interior in a traditional, classic manner: rich hardwood furniture, symmetrical arrangements, moulded panelling and cornices, warm layered fabrics, patterned rugs, and an elegant, timeless formality." },
+        { value: "art-deco", label: "Art Deco", fragment: "Furnish and style the interior in Art Deco: bold geometric patterns, lacquered wood, brass and gold accents, marble, and velvet upholstery in jewel tones, for a glamorous 1920s sophistication." },
+        { value: "bohemian", label: "Bohemian", fragment: "Furnish and style the interior in a bohemian manner: layered rugs and textiles, rattan and woven furniture, abundant plants, warm earthy and jewel tones, and an eclectic, collected, free-spirited feel." },
+        { value: "rustic", label: "Rustic / farmhouse", fragment: "Furnish and style the interior in a rustic farmhouse manner: reclaimed timber beams, natural stone, aged leather and linen, wrought iron, and a warm, homely, handcrafted character." },
+        { value: "coastal", label: "Coastal", fragment: "Furnish and style the interior in a coastal manner: a light palette of white, sand and soft blue, natural linen and rattan, weathered timber, and a breezy, relaxed seaside calm." },
+        { value: "mediterranean", label: "Mediterranean", fragment: "Furnish and style the interior in a Mediterranean manner: whitewashed lime-plaster walls, terracotta floors, wrought iron, warm ochre tones, arches, and rustic sun-baked warmth." },
+        { value: "biophilic", label: "Biophilic", fragment: "Furnish and style the interior biophilically: abundant greenery and living walls, natural timber and stone, water features, generous daylight, and a strong, restorative connection to nature." },
+        { value: "maximalist", label: "Maximalist", fragment: "Furnish and style the interior in a maximalist manner: rich saturated colours, bold layered patterns, a gallery wall, statement furniture, and a curated, exuberant abundance." },
+        { value: "luxury", label: "Luxury / hospitality", fragment: "Furnish and style the interior as high-end luxury hospitality: polished marble, brushed brass, statement lighting, plush velvet and leather, bespoke joinery, and a refined, five-star sense of opulence." },
       ],
     },
     background: {
@@ -200,7 +263,10 @@ const RENDER_DATA = {
         { value: "nightlife", label: "Nightlife", fragment: "Populate the scene with evening nightlife — glowing signage, softly lit windows, and well-dressed people out enjoying the night." },
         { value: "people", label: "People only", fragment: "Add a light scattering of pedestrians for a believable sense of scale, with no vehicles." },
         { value: "vehicles", label: "Vehicles", fragment: "Add parked and slowly moving vehicles appropriate to the setting, with subtle motion blur on those in motion." },
-        { value: "furnished", label: "Furnished interior", fragment: "Furnish the interior fully and realistically: considered furniture, layered textiles, plants, and artwork, plus a few lived-in touches such as an open book and a coffee cup that suggest the space is loved and used." },
+        { value: "furnished", label: "Furnished (lived-in)", fragment: "Furnish the interior fully and realistically: considered furniture, layered textiles, plants, and artwork, plus a few lived-in touches such as an open book and a coffee cup that suggest the space is loved and used." },
+        { value: "styled-empty", label: "Styled, no people", fragment: "Style the interior fully but leave it unoccupied, as in a magazine shoot — no people, just an immaculately composed and styled space." },
+        { value: "office-workers", label: "Office workers", fragment: "Add a few people working — seated at desks, walking, and meeting — for a natural, active workplace feel." },
+        { value: "diners", label: "Diners / guests", fragment: "Add seated diners and attentive staff for a warm, convivial hospitality atmosphere." },
         { value: "quiet", label: "Quiet / empty", fragment: "Keep the scene calm and largely unpopulated, with at most one or two distant figures, for a serene, contemplative mood." },
         { value: "as-is-ent", label: "As is", fragment: "" },
       ],
