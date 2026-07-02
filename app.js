@@ -172,6 +172,9 @@
     const a = D.output.aspect.find((o) => o.value === selVal("aspect"));
     if (a && a.ratio) segs.push({ id: "aspect", text: "Compose the image in a " + a.ratio + " aspect ratio." });
 
+    // Always forbid added text / drawing-sheet markup.
+    segs.push({ id: "no-text", text: NO_ANNOTATIONS });
+
     const custom = $("#custom").value.trim();
     if (custom) segs.push({ id: "custom", text: "Additional directions: " + custom + (/[.!?]$/.test(custom) ? "" : ".") });
 
