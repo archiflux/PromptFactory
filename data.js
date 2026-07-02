@@ -50,14 +50,25 @@ const DIRECTIVES = {
     "Render it at the quality of professional architectural photography, with accurate materials, lighting, and reflections, following the style instructions below:",
   artistic:
     "Do not render this photorealistically. Instead, reinterpret the view as a stylised, hand-crafted artwork — embracing abstraction and looser, expressive interpretation, and suggesting materials and light through the medium rather than realism — following the style instructions below:",
+  atmospheric:
+    "Do not render this as a crisp, client-ready visualization. Instead, treat it as an atmospheric, early-stage concept image that prioritises spatial character, light quality, and mood over sharp realism or exact material accuracy, following the style instructions below:",
 };
 
-/* Styles that use the artistic (non-photorealistic) directive and the `art` fragment variants. */
-const ARTISTIC_STYLES = [
+/*
+ * Style categories:
+ *  - FLAT_ART_STYLES: hand-crafted / graphic styles. They use the artistic
+ *    directive, skip the lighting instruction, and use the abstract `art`
+ *    fragment variants.
+ *  - ATMO_STYLES: photo-based atmospheric styles. They use the atmospheric
+ *    directive but keep realistic materials, context, and lighting.
+ *  Anything else is photographic/realistic.
+ */
+const FLAT_ART_STYLES = [
   "collage", "gouache", "oil-painting", "watercolor", "line-sketch",
   "charcoal", "ink-marker", "pen-wash", "risograph", "blueprint",
-  "diagram", "isometric",
+  "diagram", "isometric", "inkwork",
 ];
+const ATMO_STYLES = ["archival-collage"];
 
 const RENDER_DATA = {
   /*
@@ -129,10 +140,14 @@ const RENDER_DATA = {
       set: { style: "arch-viz", lighting: "bright-midday", material: "mixed-modern", interior: "none", background: "urban", entourage: "moderate", weather: "partly-cloudy" } },
 
     // — Artistic / hand-crafted —
-    { value: "collage-concept", label: "Collage Concept (digital)", base: BASES.free,
+    { value: "collage-concept", label: "Collage Concept (painterly)", base: BASES.free,
       set: { style: "collage", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "park", entourage: "people", weather: "partly-cloudy" } },
     { value: "collage-interior", label: "Collage Interior", base: BASES.interior,
       set: { style: "collage", lighting: "warm-interior", material: "as-is-mat", interior: "bohemian", background: "keep", entourage: "people", weather: "as-is" } },
+    { value: "inkwork-interior", label: "Architectural Inkwork", base: BASES.interior,
+      set: { style: "inkwork", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "keep", entourage: "people", weather: "as-is" } },
+    { value: "archival-collage", label: "Muted Archival Collage", base: BASES.free,
+      set: { style: "archival-collage", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "keep", entourage: "people", weather: "as-is" } },
     { value: "gouache-concept", label: "Gouache Concept", base: BASES.free,
       set: { style: "gouache", lighting: "soft-diffused", material: "as-is-mat", interior: "none", background: "urban", entourage: "people", weather: "as-is" } },
     { value: "monochrome", label: "Black & White Fine Art", base: BASES.hero,
@@ -159,6 +174,7 @@ const RENDER_DATA = {
         { value: "editorial", label: "Editorial magazine", fragment: "Render as a polished editorial architectural photograph with magazine-quality composition, refined tonal balance, and elegant negative space, as if shot for a leading design publication." },
         { value: "vintage-film", label: "Vintage film", fragment: "Render with a vintage analogue film look: a warm colour cast, soft organic grain, subtle halation around highlights, and gently faded tones reminiscent of 35mm photography." },
         { value: "monochrome", label: "Black & white", fragment: "Render as a dramatic fine-art black-and-white photograph with deep contrast, rich tonal gradation, and a sculptural play of light and shadow across the forms." },
+        { value: "archival-collage", label: "Muted archival collage", fragment: "Render as a muted archival photo-collage. Build the image from real interior/exterior photography as a base, with the building's elements composited in as pieces that match the perspective and lighting, and let the seams and layering stay subtly visible for a collaged, analogue feel. Grade the whole picture to a near-monochrome, greyscale-dominant palette with a faint warm sepia undertone — heavily desaturated and almost bleached — held to a single consistent tonal range that unifies every element. Keep it soft-focus and gently dreamlike rather than crisp CGI, and lay a fine film grain and paper texture across the entire image, as if scanned from an old photographic print. It should feel hand-crafted and artisanal — closer to an early-stage mood board or concept collage than a client-ready render — conveying spatial character, light quality, and atmosphere above all." },
 
         // — Artistic / hand-crafted —
         { value: "collage", label: "Collage (painterly)", fragment: "Render as a rich, painterly mixed-media collage. Compose each wall, floor, ceiling, and surface as a block packed with dense, expressive texture — layered oil and gouache brushstrokes, scumbled and dry-brushed marks, marbled and inky washes, printed and patterned fragments, and scraped, built-up paint — so every plane is alive with tactile surface and painterly incident rather than flat solid colour. Keep the perspective and geometry of the space intact, but treat the picture as a sophisticated, gallery-quality abstract painting: juxtapose bold, unexpected combinations of colour and texture from block to block, with confident edges where planes meet and beautiful contrasts of warm against cool, matte against lustrous, smooth against rough, muted against saturated. Keep it refined, layered, and artful — never simple, flat, or cartoonish. Do not use three-dimensional relief, torn-paper edges, drop shadows, or photorealistic rendering. Render any figures and fittings simply and almost silhouetted so they read as quiet shapes against the richly painted surfaces. The result should read as an accomplished contemporary architectural collage painting — texturally rich, colour-forward, and expressively abstract." },
@@ -169,6 +185,7 @@ const RENDER_DATA = {
         { value: "charcoal", label: "Charcoal drawing", fragment: "Render as an expressive charcoal drawing with smudged tonal shading, bold gestural strokes, and a moody monochrome character." },
         { value: "ink-marker", label: "Ink & marker", fragment: "Render as an ink-and-marker concept sketch with bold confident outlines, layered marker shading, and a lively, designerly hand." },
         { value: "pen-wash", label: "Pen & wash", fragment: "Render as a pen-and-ink line drawing with a loose watercolour wash, crisp confident linework, and a fresh architectural-sketch feel." },
+        { value: "inkwork", label: "Architectural inkwork", fragment: "Render as a hand-drawn architectural ink perspective sketch, in the style of a classic architect's presentation drawing. Draw with a fine, uniform-weight ink pen, using mostly single-line contours with the occasional doubled, sketchy 'correction' line for energy. Set the scene out in precise one- or two-point perspective with accurate vanishing lines for windows, floors, ceiling beams, and stairs. Render structural elements — glazing, mullions, beams, stairs — crisply and accurately; draw furniture more loosely but in correct proportion; and give planting and foliage the most textured, organic linework. Use light hatching or crosshatching only sparingly — for foliage, the shadow beneath furniture, or window mullions — and leave most of the drawing as clean white paper. Include a few minimal, gestural, near-faceless figures for scale and a lived-in feel. Keep the mood calm, domestic, and daylight-filled, emphasising the connection to the outside through large glazing. It should read as a technical yet human, inviting architect's sketch — precise enough to convey real space and construction, loose enough to feel hand-drawn." },
         { value: "risograph", label: "Risograph / screen-print", fragment: "Render as a risograph / screen-print with a limited palette of two or three flat spot colours, slight mis-registration, grainy ink texture, and a bold graphic poster feel." },
         { value: "blueprint", label: "Blueprint", fragment: "Render as a classic blueprint: precise white technical line work on a deep cyan-blue ground, with annotation-style clarity and clean edges." },
         { value: "diagram", label: "Conceptual diagram", fragment: "Render as a clean conceptual diagram with flat colour fills, simplified surfaces, clear visual hierarchy, and an analytical, explanatory feel." },

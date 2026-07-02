@@ -41,7 +41,13 @@ activity, and photographic / editorial quality tags.
 The library spans exterior, **interior**, concept and artistic looks: interior
 design styles (Scandinavian, Japandi, mid-century, industrial, corporate,
 traditional, luxury and more) and hand-crafted render styles including a
-mixed-media **collage** style, gouache, oil, charcoal and pen-and-wash.
+painterly **collage** style, **architectural inkwork**, **muted archival
+collage**, gouache, oil, charcoal and pen-and-wash.
+
+Styles fall into three categories that shape the whole prompt: photographic
+(realistic), flat hand-crafted art (non-photorealistic, no realistic lighting,
+abstract supporting wording), and photo-based atmospheric (e.g. archival
+collage — keeps real materials and light but drops the crisp-render push).
 
 ## Deploy to Vercel
 

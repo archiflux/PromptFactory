@@ -147,22 +147,25 @@
   function buildSegments() {
     const segs = [{ id: "base", text: currentPreset().base.trim() }];
 
-    // Render directive: photographic vs. artistic (non-photorealistic).
+    // Render directive by style category: flat hand-crafted art, photo-based
+    // atmospheric, or photographic. `flatArt` also drives skipping lighting and
+    // using the abstract `art` fragment variants.
     const styleVal = selVal("sel-style");
-    const artistic = ARTISTIC_STYLES.indexOf(styleVal) !== -1;
-    segs.push({ id: "directive", text: artistic ? DIRECTIVES.artistic : DIRECTIVES.photoreal });
+    const flatArt = FLAT_ART_STYLES.indexOf(styleVal) !== -1;
+    const atmo = ATMO_STYLES.indexOf(styleVal) !== -1;
+    segs.push({ id: "directive", text: flatArt ? DIRECTIVES.artistic : atmo ? DIRECTIVES.atmospheric : DIRECTIVES.photoreal });
 
     for (const key of FIELD_ORDER) {
       // Artistic styles interpret light through the medium — skip the realistic
       // lighting instruction so it doesn't push photographic lighting.
-      if (artistic && key === "lighting") continue;
-      const frag = fragmentFor(key, artistic);
+      if (flatArt && key === "lighting") continue;
+      const frag = fragmentFor(key, flatArt);
       if (frag) segs.push({ id: key, text: frag });
     }
 
     const q = D.output.quality.find((o) => o.value === selVal("quality"));
     if (q) {
-      const qFrag = artistic && q.art ? q.art : q.fragment;
+      const qFrag = flatArt && q.art ? q.art : q.fragment;
       if (qFrag) segs.push({ id: "quality", text: qFrag });
     }
 
