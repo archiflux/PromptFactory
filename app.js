@@ -27,11 +27,15 @@
   }
   const selVal = (id) => (document.getElementById(id) || {}).value || "";
 
-  function fragmentFor(fieldKey) {
+  // When `artistic`, prefer an option's abstract/expressionist `art` wording so
+  // no fragment tells a hand-crafted image to look "realistic".
+  function fragmentFor(fieldKey, artistic) {
     const sel = document.getElementById("sel-" + fieldKey);
     if (!sel) return "";
     const opt = D.fields[fieldKey].options.find((o) => o.value === sel.value);
-    return opt && opt.fragment ? opt.fragment.trim() : "";
+    if (!opt) return "";
+    const frag = artistic && opt.art ? opt.art : opt.fragment;
+    return frag ? frag.trim() : "";
   }
   const currentPreset = () => D.presets.find((p) => p.value === state.preset) || D.presets[0];
 
@@ -152,12 +156,15 @@
       // Artistic styles interpret light through the medium — skip the realistic
       // lighting instruction so it doesn't push photographic lighting.
       if (artistic && key === "lighting") continue;
-      const frag = fragmentFor(key);
+      const frag = fragmentFor(key, artistic);
       if (frag) segs.push({ id: key, text: frag });
     }
 
     const q = D.output.quality.find((o) => o.value === selVal("quality"));
-    if (q && q.fragment) segs.push({ id: "quality", text: q.fragment });
+    if (q) {
+      const qFrag = artistic && q.art ? q.art : q.fragment;
+      if (qFrag) segs.push({ id: "quality", text: qFrag });
+    }
 
     const a = D.output.aspect.find((o) => o.value === selVal("aspect"));
     if (a && a.ratio) segs.push({ id: "aspect", text: "Compose the image in a " + a.ratio + " aspect ratio." });
