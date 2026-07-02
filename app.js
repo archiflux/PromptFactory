@@ -149,6 +149,9 @@
     segs.push({ id: "directive", text: artistic ? DIRECTIVES.artistic : DIRECTIVES.photoreal });
 
     for (const key of FIELD_ORDER) {
+      // Artistic styles interpret light through the medium — skip the realistic
+      // lighting instruction so it doesn't push photographic lighting.
+      if (artistic && key === "lighting") continue;
       const frag = fragmentFor(key);
       if (frag) segs.push({ id: key, text: frag });
     }
