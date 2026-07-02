@@ -143,6 +143,11 @@
   function buildSegments() {
     const segs = [{ id: "base", text: currentPreset().base.trim() }];
 
+    // Render directive: photographic vs. artistic (non-photorealistic).
+    const styleVal = selVal("sel-style");
+    const artistic = ARTISTIC_STYLES.indexOf(styleVal) !== -1;
+    segs.push({ id: "directive", text: artistic ? DIRECTIVES.artistic : DIRECTIVES.photoreal });
+
     for (const key of FIELD_ORDER) {
       const frag = fragmentFor(key);
       if (frag) segs.push({ id: key, text: frag });

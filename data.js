@@ -7,37 +7,55 @@
  * pick configures the whole look. Every preset MUST set every field key.
  */
 
-/* Framing instructions — these protect the source geometry. */
+/*
+ * Framing instructions — these protect the source geometry only. They no longer
+ * assert photorealism; the "render directive" (below) decides realistic vs.
+ * artistic, so hand-crafted styles are never told to look photographic.
+ */
 const BASES = {
   exterior:
     "You are an architectural rendering engine. I am providing an exported building view. " +
     "Preserve the exact geometry, spatial composition, camera angle, and perspective of this image. " +
-    "Do not add, remove, or reposition any building elements. Do not change the proportions or layout of the structure. " +
-    "Render the image at the quality of professional architectural photography, with the following style instructions:",
+    "Do not add, remove, or reposition any building elements, and do not change the proportions or layout of the structure.",
   hero:
     "You are an architectural rendering engine. I am providing an exported exterior view of a building. " +
     "Preserve the exact massing, facade articulation, camera angle, and perspective of this image. " +
-    "Do not add, remove, or reposition any building elements, and do not alter the proportions of the structure. " +
-    "Produce a polished, magazine-quality hero exterior rendering using the following style instructions:",
+    "Do not add, remove, or reposition any building elements, and do not alter the proportions of the structure.",
   interior:
     "You are an architectural rendering engine. I am providing an exported interior view. " +
     "Preserve the exact room geometry, layout, ceiling height, camera angle, and perspective of this image. " +
-    "Do not move walls, openings, or furniture, and do not change the proportions of the space. " +
-    "Render a photorealistic, professionally lit interior using the following style instructions:",
+    "Do not move walls, openings, or furniture, and do not change the proportions of the space.",
   concept:
     "You are an architectural visualization engine. I am providing an exported massing/concept view. " +
     "Keep the overall form, footprint, height, camera angle, and perspective of this image intact. " +
-    "You may refine surfaces and add context, but do not change the fundamental shape of the building. " +
-    "Render a clean, early-stage concept image using the following style instructions:",
+    "You may refine surfaces and add context, but do not change the fundamental shape of the building.",
   aerial:
     "You are an architectural rendering engine. I am providing an exported aerial / site view. " +
     "Preserve the exact site layout, building positions, road network, camera angle, and bird's-eye perspective of this image. " +
-    "Do not move or resize any buildings or site elements. " +
-    "Render a contextual, high-fidelity aerial visualization using the following style instructions:",
+    "Do not move or resize any buildings or site elements.",
   free:
-    "Render this exported architectural view as a high-quality, expressive image. " +
-    "Keep the camera angle and overall composition, and apply the following style instructions:",
+    "I am providing an exported architectural view. " +
+    "Keep the camera angle, composition, and overall geometry of this image.",
 };
+
+/*
+ * Render directive — inserted right after the framing. Chosen by whether the
+ * selected style is photographic or hand-crafted/artistic. Artistic styles are
+ * explicitly told NOT to be photorealistic and to embrace abstraction.
+ */
+const DIRECTIVES = {
+  photoreal:
+    "Render it at the quality of professional architectural photography, with accurate materials, lighting, and reflections, following the style instructions below:",
+  artistic:
+    "Do not render this photorealistically. Instead, reinterpret the view as a stylised, hand-crafted artwork — embracing abstraction and looser, expressive interpretation, and suggesting materials and light through the medium rather than realism — following the style instructions below:",
+};
+
+/* Styles that use the artistic (non-photorealistic) directive. */
+const ARTISTIC_STYLES = [
+  "collage", "gouache", "oil-painting", "watercolor", "line-sketch",
+  "charcoal", "ink-marker", "pen-wash", "risograph", "blueprint",
+  "diagram", "isometric",
+];
 
 const RENDER_DATA = {
   /*
